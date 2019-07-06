@@ -2,12 +2,11 @@
 %define tengine_user tengine
 %define tengine_group tengine
 %define tengine_loggroup adm
-%define version 2.2.3
-%define release 1
+%define version 2.3.1
 
 Name:           tengine
 Version:        %{version}
-Release:        %{release}
+Release:        1
 Summary:        Tengine is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features. Tengine has proven to be very stable and efficient on some of the top 100 websites in the world, including taobao.com and tmall.com.
 
 License:        2-clause BSD-like license
@@ -18,7 +17,7 @@ Source2:        %{name}.service
 Source3:        %{name}.conf
 Source4:        %{name}.vh.default.conf
 
-BuildRequires:  redhat-lsb-core systemd libxslt-devel gd-devel luajit-devel GeoIP-devel unzip pcre-devel zlib-devel
+BuildRequires:  redhat-lsb-core systemd libxslt-devel gd-devel luajit-devel GeoIP-devel unzip pcre-devel zlib-devel perl perl-devel perl-ExtUtils-Embed
 Requires:       openssl systemd libxslt gd luajit GeoIP
 
 %description
@@ -46,42 +45,50 @@ CXXFLAGS="$RPM_OPT_FLAGS -Wimplicit-fallthrough=0 -Werror=implicit-fallthrough=0
 #./configure --help
 ./configure  --prefix=%{_datadir}/%{name} \
     --with-cc-opt="-Wno-error" \
-    --includedir=%{_includedir}/%{name} \
     --sbin-path=%{_sbindir}/%{name} \
-    --dso-tool-path=%{_sbindir}/%{name}_dso_tool \
-    --dso-path=%{_libdir}/%{name}/modules \
     --conf-path=%{_sysconfdir}/%{name}/%{name}.conf \
     --error-log-path=%{_localstatedir}/log/%{name}/error.log \
     --http-log-path=%{_localstatedir}/log/%{name}/access.log \
     --pid-path=%{_localstatedir}/run/%{name}.pid \
     --lock-path=%{_localstatedir}/run/%{name}.lock \
+    --user=%{tengine_user} \
+    --group=%{tengine_group} \
+    --with-select_module \
+    --with-poll_module \
+    --with-threads \
+    --with-file-aio \
+    --with-http_ssl_module \
+    --with-http_v2_module \
+    --with-http_realip_module \
+    --with-http_addition_module \
+    --with-http_xslt_module \
+    --with-http_image_filter_module \
+    --with-http_geoip_module \
+    --with-http_sub_module \
+    --with-http_dav_module \
+    --with-http_flv_module \
+    --with-http_mp4_module \
+    --with-http_gunzip_module \
+    --with-http_gzip_static_module \
+    --with-http_auth_request_module \
+    --with-http_random_index_module \
+    --with-http_secure_link_module \
+    --with-http_degradation_module \
+    --with-http_slice_module \
+    --with-http_stub_status_module \
     --http-client-body-temp-path=%{_localstatedir}/cache/%{name}/client_temp \
     --http-proxy-temp-path=%{_localstatedir}/cache/%{name}/proxy_temp \
     --http-fastcgi-temp-path=%{_localstatedir}/cache/%{name}/fastcgi_temp \
     --http-uwsgi-temp-path=%{_localstatedir}/cache/%{name}/uwsgi_temp \
     --http-scgi-temp-path=%{_localstatedir}/cache/%{name}/scgi_temp \
-    --user=%{tengine_user} --group=%{tengine_group} \
-    --with-file-aio --with-threads \
-    --with-http_addition_module \
-    --with-http_auth_request_module \
-    --with-http_dav_module \
-    --with-http_flv_module \
-    --with-http_gunzip_module \
-    --with-http_gzip_static_module \
-    --with-http_mp4_module \
-    --with-http_random_index_module \
-    --with-http_realip_module \
-    --with-http_secure_link_module \
-    --with-http_slice_module \
-    --with-http_ssl_module \
-    --with-http_stub_status_module \
-    --with-http_sub_module \
-    --with-http_v2_module \
     --with-mail \
     --with-mail_ssl_module \
-    --enable-mods-shared=all
-
-
+    --with-stream \
+    --with-stream_ssl_module \
+    --with-stream_realip_module \
+    --with-stream_geoip_module \
+    --with-stream_ssl_preread_module \
+    --with-stream_sni
 
 make %{?_smp_mflags}
 
@@ -122,14 +129,14 @@ mkdir -p $RPM_BUILD_ROOT%{_unitdir}
 %{_unitdir}/%{name}.service
 %{_sbindir}/*
 %{_datadir}/%{name}
-%{_libdir}/%{name}
+# %{_libdir}/%{name}
 %{_localstatedir}/log/%{name}
 %{_localstatedir}/cache/%{name}
 
 %files devel
 %defattr(-,root,root,-)
 
-%{_includedir}/*
+# %{_includedir}/*
 
 %pre
 # Add the "tengine" user
@@ -171,5 +178,23 @@ fi
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 
 %changelog
+* Tue Jun 18 2019 Tengine <rpm@tengine.com> -  2.3.1
+- Feature: add $ssl_handshake_time variable for stream ssl module (mrpre)
+- Feature: support websocket check of upstream check module (mrpre)
+- Change: random index logical for round robin (wangfakang)
+- Change: update http lua module to v0.10.14 (mrpre)
+- Change: update dyups to master branch of yzprofile/dyups (chobits)
+- Change: update core to Nginx-1.16.0 (MenqqiWu)
+- Change: support dynamic module for reqstatus (chobits)
+- Change: support dynamic build for upstream dynamic module (wangfakang)
+- Change: support dynamic build for trim module (wangfakang)
+- Change: support dynamic build for footer module (wangfakang)
+- Change: support dynamic build for user_agent module (wangfakang)
+- Change: support dynamic build for concat module (mathieu-aubin)
+- Fix: server version strings in http2 and stream response headers (AstroProfundis)
+- Fix: "-m" option to show dynamic module (wangfakang)
+- Fix：parameter number check for limit_req directive (wangfakang)
+- Fix: fixed compilation error on macOS for reqstatus (chobits)
+
 * Thu Sep 28 2017 Tengine <rpm@tengine.com> -  2.2.3
 - fix pipe variable 'ccf' set but not used
