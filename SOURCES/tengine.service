@@ -1,0 +1,16 @@
+[Unit]
+Description=tengine - high performance web server
+Documentation=http://tengine.taobao.org/documentation.html
+After=network-online.target remote-fs.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/tengine.pid
+ExecStartPre=/usr/sbin/tengine -t -c /etc/tengine/tengine.conf
+ExecStart=/usr/sbin/tengine -c /etc/tengine/tengine.conf
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target
