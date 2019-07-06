@@ -122,7 +122,7 @@ mkdir -p $RPM_BUILD_ROOT%{_unitdir}
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/cache/%{name}
 
 %files
-%doc README README.markdown CHANGES CHANGES.* LICENSE contrib docs
+%doc README.markdown CHANGES CHANGES.* LICENSE contrib docs
 
 %{_sysconfdir}/%{name}
 %{_sysconfdir}/logrotate.d/%{name}
