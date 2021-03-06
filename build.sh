@@ -9,9 +9,11 @@ ARCH="x86_64"
 CHROOTS="epel-7"
 SPEC_FILE=${RPM_NAME}.spec
 MOCK_CHROOTS="${CHROOTS}-${ARCH}"
+GITHUB_REPO_URL="https://github.com/xiexianbin/tengine-rpm"
+CONTACT="me@xiexianbin.cn"
 COPR_PROJECT_DESCRIPTION="Tengine is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features. Tengine has proven to be very stable and efficient on some of the top 100 websites in the world, including taobao.com and tmall.com."
 COPR_PROJECT_INSTRUCTIONS="\`\`\`
-sudo curl -sL -o /etc/yum.repos.d/${COPR_USERNAME}-${COPR_PROJECT_NAME}-${CHROOTS}.repo https://copr.fedorainfracloud.org/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/repo/${CHROOTS}/${COPR_USERNAME}-${COPR_PROJECT_NAME}-${CHROOTS}.repo
+sudo curl -sL -o /etc/yum.repos.d/${COPR_USERNAME}-${COPR_PROJECT_NAME}-${CHROOTS}.repo ${COPR_URL}/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/repo/${CHROOTS}/${COPR_USERNAME}-${COPR_PROJECT_NAME}-${CHROOTS}.repo
 \`\`\`
 
 \`\`\`
@@ -52,6 +54,7 @@ build_srpm() {
 
 build_rpm_with_mock() {
   build_srpm
+
   for mock_chroot in $MOCK_CHROOTS; do
     /usr/bin/mock -r ${mock_chroot} --rebuild ${topdir}/SRPMS/${srpm_file}
 
@@ -71,7 +74,7 @@ build_rpm_on_copr() {
   build_srpm
 
   # Check the project is already created on copr?
-  status=`curl -s -o /dev/null -w "%{http_code}" https://copr.fedorainfracloud.org/api/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/detail/`
+  status=`curl -s -o /dev/null -w "%{http_code}" ${COPR_URL}/api/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/detail/`
   if [ $status = "404" ]; then
     # the project is not exist on copr, create it
     chroot_opts=''
@@ -84,8 +87,10 @@ build_rpm_on_copr() {
       $chroot_opts \
       --data-urlencode "description=${COPR_PROJECT_DESCRIPTION}" \
       --data-urlencode "instructions=${COPR_PROJECT_INSTRUCTIONS}" \
+      --data-urlencode "homepage=${GITHUB_REPO_URL}" \
+      --data-urlencode "contact=${CONTACT}" \
       --data-urlencode "build_enable_net=y" \
-      https://copr.fedorainfracloud.org/api/coprs/${COPR_USERNAME}/new/
+      ${COPR_URL}/api/coprs/${COPR_USERNAME}/new/
   fi
   # uploading a srpm file and create new build form srpm
   chroot_opts=''
@@ -94,9 +99,10 @@ build_rpm_on_copr() {
   done
   curl -s -X POST \
     -u "${COPR_LOGIN}:${COPR_TOKEN}" \
-    -H "Expect:" $chroot_opts \
+    -H "Expect:" \
+    $chroot_opts \
     -F "pkgs=@${topdir}/SRPMS/${srpm_file};type=application/x-rpm" \
-    https://copr.fedorainfracloud.org/api/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/new_build_upload/
+    ${COPR_URL}/api/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/new_build_upload/
 }
 
 case "${1:-}" in

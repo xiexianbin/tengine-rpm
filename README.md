@@ -22,6 +22,7 @@ help                 Show this help.
 build                Build Docker image to build rpm.
 bash                 Run /bin/bash in the Docker image to build rpm.
 copr                 Run docker image to build rpm and push srpm to copr.
+debug                Build Docker image to build rpm and into bash.
 ```
 
 ### Setup
