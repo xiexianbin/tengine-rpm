@@ -1,7 +1,7 @@
 %define tengine_home %{_localstatedir}/cache/tengine
 %define tengine_user tengine
 %define tengine_group tengine
-%define tengine_loggroup adm
+%define tengine_loggroup tengine
 %define version 2.3.1
 
 Name:           tengine
@@ -10,14 +10,14 @@ Release:        1
 Summary:        Tengine is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features. Tengine has proven to be very stable and efficient on some of the top 100 websites in the world, including taobao.com and tmall.com.
 
 License:        2-clause BSD-like license
-URL:            http://tengine.taobao.org
-Source0:        tengine-%{version}.tar.gz 
+URL:            https://tengine.taobao.org
+Source0:        https://tengine.taobao.org/download/tengine-%{version}.tar.gz
 Source1:        logrotate
 Source2:        %{name}.service
 Source3:        %{name}.conf
 Source4:        %{name}.vh.default.conf
 
-BuildRequires:  redhat-lsb-core systemd libxslt-devel gd-devel luajit-devel GeoIP-devel unzip pcre-devel zlib-devel perl perl-devel perl-ExtUtils-Embed
+BuildRequires:  openssl-devel redhat-lsb-core systemd libxslt-devel gd-devel luajit-devel GeoIP-devel unzip pcre-devel zlib-devel perl perl-devel perl-ExtUtils-Embed
 Requires:       openssl systemd libxslt gd luajit GeoIP
 
 %description
