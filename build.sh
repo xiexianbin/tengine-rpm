@@ -9,6 +9,8 @@ ARCH="x86_64"
 CHROOTS="epel-7"
 SPEC_FILE=${RPM_NAME}.spec
 MOCK_CHROOTS="${CHROOTS}-${ARCH}"
+GITHUB_REPO_URL="https://github.com/xiexianbin/tengine-rpm"
+CONTACT="me@xiexianbin.cn"
 COPR_PROJECT_DESCRIPTION="Tengine is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features. Tengine has proven to be very stable and efficient on some of the top 100 websites in the world, including taobao.com and tmall.com."
 COPR_PROJECT_INSTRUCTIONS="\`\`\`
 sudo curl -sL -o /etc/yum.repos.d/${COPR_USERNAME}-${COPR_PROJECT_NAME}-${CHROOTS}.repo https://copr.fedorainfracloud.org/coprs/${COPR_USERNAME}/${COPR_PROJECT_NAME}/repo/${CHROOTS}/${COPR_USERNAME}-${COPR_PROJECT_NAME}-${CHROOTS}.repo
@@ -84,6 +86,8 @@ build_rpm_on_copr() {
       $chroot_opts \
       --data-urlencode "description=${COPR_PROJECT_DESCRIPTION}" \
       --data-urlencode "instructions=${COPR_PROJECT_INSTRUCTIONS}" \
+      --data-urlencode "homepage=${GITHUB_REPO_URL}" \
+      --data-urlencode "contact=${CONTACT}" \
       --data-urlencode "build_enable_net=y" \
       https://copr.fedorainfracloud.org/api/coprs/${COPR_USERNAME}/new/
   fi

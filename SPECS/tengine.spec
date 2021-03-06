@@ -2,7 +2,7 @@
 %define tengine_user tengine
 %define tengine_group tengine
 %define tengine_loggroup tengine
-%define version 2.3.1
+%define version 2.3.2
 
 Name:           tengine
 Version:        %{version}
@@ -178,6 +178,19 @@ fi
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 
 %changelog
+* Tue Aug 20 2019 Tengine <rpm@tengine.com> -  2.3.2
+- Security: fixed CVE-2019-9511, CVE-2019-9513 and CVE-2019-9516. (wangfakang)
+- Feature: added dubbo_pass directive to support the back-end HTTP to Dubbo protocol. (MenqqiWu)
+- Feature: added VNSWRR algorithm for upstream module. (wangfakang)
+- Feature: support IPv6 for dynamic_resolve module. (wangfakang)
+- Change: support dynamic build and add some debug log for proxy_connect module. (chobits)
+- Change: updated the code from Nginx-1.17.3 version. (wangfakang)
+- Change: updated the health_check module document. (zhangqx2010)
+- Change: updated README document. (Lin-Buo-Ren)
+- Bugfix: fixed JSON format for health_check module. (IYism)
+- Bugfix: ensured 'init_worker_by_lua*' does not mutate another Nginx module's main_conf. (wangfakang)
+- Bugfix: fixed compilation error of dyups module compiled with a higher version of OpenSSL. (wangfakang)
+
 * Tue Jun 18 2019 Tengine <rpm@tengine.com> -  2.3.1
 - Feature: add $ssl_handshake_time variable for stream ssl module (mrpre)
 - Feature: support websocket check of upstream check module (mrpre)
